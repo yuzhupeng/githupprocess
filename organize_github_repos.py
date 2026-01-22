@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GitHub Stars 整理脚本
+GitHub Repositories 整理脚本
 功能：按语言、主题分类，生成 Markdown、JSON、CSV 格式的报告
 """
 
@@ -30,7 +30,7 @@ except ImportError:
     print("⚠️  未安装翻译库，将跳过翻译功能")
     print("   安装命令: pip install httpx")
 
-class GitHubStarOrganizer:
+class GitHubRepoOrganizer:
     # 描述长度限制
     DESC_MAX_LENGTH = 100
     
@@ -100,16 +100,16 @@ class GitHubStarOrganizer:
         self.headers = {'Accept': 'application/vnd.github.v3+json'}
         if token:
             self.headers['Authorization'] = f'token {token}'
-        self.stars = []
+        self.repos = []
         self.translation_cache = {}  # 缓存翻译结果
     
-    def fetch_stars(self, limit=None):
-        """获取所有 star 项目"""
-        print(f"正在获取 {self.username} 的 star 项目...")
+    def fetch_repos(self, limit=None):
+        """获取所有 repositories"""
+        print(f"正在获取 {self.username} 的 repositories...")
         page = 1
         while True:
-            url = f'https://api.github.com/users/{self.username}/starred'
-            params = {'page': page, 'per_page': 100, 'sort': 'starred_at', 'direction': 'desc'}
+            url = f'https://api.github.com/users/{self.username}/repos'
+            params = {'page': page, 'per_page': 100, 'sort': 'updated', 'direction': 'desc'}
             
             try:
                 response = requests.get(url, headers=self.headers, params=params, timeout=10)
@@ -121,12 +121,12 @@ class GitHubStarOrganizer:
                 if not data:
                     break
                 
-                self.stars.extend(data)
-                print(f"已获取 {len(self.stars)} 个项目...")
+                self.repos.extend(data)
+                print(f"已获取 {len(self.repos)} 个项目...")
                 
                 # 如果指定了限制，检查是否达到
-                if limit and len(self.stars) >= limit:
-                    self.stars = self.stars[:limit]
+                if limit and len(self.repos) >= limit:
+                    self.repos = self.repos[:limit]
                     break
                 
                 page += 1
@@ -134,8 +134,8 @@ class GitHubStarOrganizer:
                 print(f"获取数据出错: {e}")
                 break
         
-        print(f"✓ 共获取 {len(self.stars)} 个 star 项目\n")
-        return self.stars
+        print(f"✓ 共获取 {len(self.repos)} 个 repositories\n")
+        return self.repos
     
     def categorize_by_topic(self, description):
         """根据描述分类到主题"""
@@ -154,32 +154,32 @@ class GitHubStarOrganizer:
     def organize_by_language(self):
         """按编程语言分类"""
         organized = defaultdict(list)
-        for star in self.stars:
-            lang = star.get('language') or 'Unknown'
-            organized[lang].append(self._format_star(star))
+        for repo in self.repos:
+            lang = repo.get('language') or 'Unknown'
+            organized[lang].append(self._format_repo(repo))
         return organized
     
     def organize_by_topic(self):
         """按主题分类"""
         organized = defaultdict(list)
-        for star in self.stars:
-            description = star.get('description', '')
+        for repo in self.repos:
+            description = repo.get('description', '')
             topics = self.categorize_by_topic(description)
             for topic in topics:
-                organized[topic].append(self._format_star(star))
+                organized[topic].append(self._format_repo(repo))
         return organized
     
     def sort_by_stars(self):
         """按 Stars 数排序"""
-        return sorted(self.stars, key=lambda x: x['stargazers_count'], reverse=True)
+        return sorted(self.repos, key=lambda x: x['stargazers_count'], reverse=True)
     
     def sort_by_forks(self):
         """按 Forks 数排序"""
-        return sorted(self.stars, key=lambda x: x['forks_count'], reverse=True)
+        return sorted(self.repos, key=lambda x: x['forks_count'], reverse=True)
     
     def sort_by_updated(self):
         """按更新时间排序"""
-        return sorted(self.stars, key=lambda x: x['updated_at'], reverse=True)
+        return sorted(self.repos, key=lambda x: x['updated_at'], reverse=True)
     
     def get_statistics(self):
         """获取详细统计信息"""
@@ -187,20 +187,20 @@ class GitHubStarOrganizer:
         by_topic = self.organize_by_topic()
         
         # 计算平均 stars 和 forks
-        avg_stars = sum(s['stargazers_count'] for s in self.stars) / len(self.stars) if self.stars else 0
-        avg_forks = sum(s['forks_count'] for s in self.stars) / len(self.stars) if self.stars else 0
+        avg_stars = sum(r['stargazers_count'] for r in self.repos) / len(self.repos) if self.repos else 0
+        avg_forks = sum(r['forks_count'] for r in self.repos) / len(self.repos) if self.repos else 0
         
         # 找出最活跃的项目（最近更新）
-        most_active = sorted(self.stars, key=lambda x: x['updated_at'], reverse=True)[:5]
+        most_active = sorted(self.repos, key=lambda x: x['updated_at'], reverse=True)[:5]
         
         # 找出最受欢迎的项目
-        most_popular = sorted(self.stars, key=lambda x: x['stargazers_count'], reverse=True)[:5]
+        most_popular = sorted(self.repos, key=lambda x: x['stargazers_count'], reverse=True)[:5]
         
         # 找出最多 fork 的项目
-        most_forked = sorted(self.stars, key=lambda x: x['forks_count'], reverse=True)[:5]
+        most_forked = sorted(self.repos, key=lambda x: x['forks_count'], reverse=True)[:5]
         
         return {
-            'total': len(self.stars),
+            'total': len(self.repos),
             'by_language': by_lang,
             'by_topic': by_topic,
             'avg_stars': avg_stars,
@@ -269,26 +269,28 @@ class GitHubStarOrganizer:
         
         return truncated
     
-    def _format_star(self, star):
-        """格式化 star 项目信息"""
+    def _format_repo(self, repo):
+        """格式化 repository 信息"""
         return {
-            'name': star['name'],
-            'url': star['html_url'],
-            'description': star['description'] or '暂无描述',
-            'stars': star['stargazers_count'],
-            'language': star['language'] or 'Unknown',
-            'forks': star['forks_count'],
-            'updated_at': star['updated_at'],
+            'name': repo['name'],
+            'url': repo['html_url'],
+            'description': repo['description'] or '暂无描述',
+            'stars': repo['stargazers_count'],
+            'language': repo['language'] or 'Unknown',
+            'forks': repo['forks_count'],
+            'updated_at': repo['updated_at'],
+            'is_fork': repo['fork'],
+            'is_private': repo['private'],
         }
     
     def generate_markdown(self):
         """生成 Markdown 文档"""
         stats = self.get_statistics()
         
-        md = f"# GitHub Stars 整理\n\n"
+        md = f"# GitHub Repositories 整理\n\n"
         md += f"**用户**: {self.username}\n"
         md += f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-        md += f"**总数**: {len(self.stars)} 个项目\n\n"
+        md += f"**总数**: {len(self.repos)} 个项目\n\n"
         
         # 快速导航
         md += "## 📑 快速导航\n\n"
@@ -390,42 +392,44 @@ class GitHubStarOrganizer:
         
         return md
     
-    def save_markdown(self, filename='GitHub_Stars.md'):
+    def save_markdown(self, filename='GitHub_Repos.md'):
         """保存为 Markdown 文件"""
         md = self.generate_markdown()
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(md)
         print(f"✓ Markdown 文件已保存: {filename}")
     
-    def save_json(self, filename='github_stars.json'):
+    def save_json(self, filename='github_repos.json'):
         """保存为 JSON 文件"""
         data = {
             'username': self.username,
             'generated_at': datetime.now().isoformat(),
-            'total': len(self.stars),
+            'total': len(self.repos),
             'by_language': self.organize_by_language(),
             'by_topic': self.organize_by_topic(),
-            'all_projects': [self._format_star(s) for s in self.stars]
+            'all_repos': [self._format_repo(r) for r in self.repos]
         }
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"✓ JSON 文件已保存: {filename}")
     
-    def save_csv(self, filename='github_stars.csv'):
+    def save_csv(self, filename='github_repos.csv'):
         """保存为 CSV 文件"""
         with open(filename, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['项目名称', '链接', '描述', 'Stars', '语言', 'Forks', '最后更新'])
+            writer.writerow(['项目名称', '链接', '描述', 'Stars', '语言', 'Forks', '最后更新', '是否Fork', '是否私有'])
             
-            for star in sorted(self.stars, key=lambda x: x['stargazers_count'], reverse=True):
+            for repo in sorted(self.repos, key=lambda x: x['stargazers_count'], reverse=True):
                 writer.writerow([
-                    star['name'],
-                    star['html_url'],
-                    star['description'] or '暂无描述',
-                    star['stargazers_count'],
-                    star['language'] or 'Unknown',
-                    star['forks_count'],
-                    star['updated_at']
+                    repo['name'],
+                    repo['html_url'],
+                    repo['description'] or '暂无描述',
+                    repo['stargazers_count'],
+                    repo['language'] or 'Unknown',
+                    repo['forks_count'],
+                    repo['updated_at'],
+                    '是' if repo['fork'] else '否',
+                    '是' if repo['private'] else '否',
                 ])
         print(f"✓ CSV 文件已保存: {filename}")
     
@@ -437,7 +441,7 @@ class GitHubStarOrganizer:
         print("\n" + "="*50)
         print("📈 统计摘要")
         print("="*50)
-        print(f"总项目数: {len(self.stars)}")
+        print(f"总项目数: {len(self.repos)}")
         print(f"\n编程语言分布 (Top 5):")
         for lang, projects in sorted(by_lang.items(), key=lambda x: len(x[1]), reverse=True)[:5]:
             print(f"  {lang}: {len(projects)} 个")
@@ -446,9 +450,10 @@ class GitHubStarOrganizer:
         for topic, projects in sorted(by_topic.items(), key=lambda x: len(x[1]), reverse=True)[:5]:
             print(f"  {topic}: {len(projects)} 个")
         
-        top_star = max(self.stars, key=lambda x: x['stargazers_count'])
-        print(f"\n最受欢迎的项目:")
-        print(f"  {top_star['name']}: ⭐ {top_star['stargazers_count']}")
+        if self.repos:
+            top_repo = max(self.repos, key=lambda x: x['stargazers_count'])
+            print(f"\n最受欢迎的项目:")
+            print(f"  {top_repo['name']}: ⭐ {top_repo['stargazers_count']}")
         print("="*50 + "\n")
 
 
@@ -462,11 +467,11 @@ def main():
         return
     
     # 创建整理器
-    organizer = GitHubStarOrganizer(USERNAME, TOKEN)
+    organizer = GitHubRepoOrganizer(USERNAME, TOKEN)
     
-    # 获取数据 (先获取所有数据)
-    if not organizer.fetch_stars():
-        print("无法获取 star 项目，请检查用户名或网络连接")
+    # 获取数据
+    if not organizer.fetch_repos():
+        print("无法获取 repositories，请检查用户名或网络连接")
         return
     
     # 生成报告
