@@ -1,0 +1,80 @@
+{
+  "username": "yuzhupeng",
+  "generated_at": "2024-01-30T10:00:00",
+  "total": 5,
+  "by_language": {
+    "Python": {
+      "count": 2,
+      "percentage": 40
+    },
+    "JavaScript": {
+      "count": 2,
+      "percentage": 40
+    },
+    "Go": {
+      "count": 1,
+      "percentage": 20
+    }
+  },
+  "by_topic": {
+    "AI/ML": {
+      "count": 2,
+      "percentage": 40
+    },
+    "Web 框架": {
+      "count": 2,
+      "percentage": 40
+    },
+    "DevOps": {
+      "count": 1,
+      "percentage": 20
+    }
+  },
+  "all_projects": [
+    {
+      "name": "tensorflow",
+      "html_url": "https://github.com/tensorflow/tensorflow",
+      "description": "An Open Source Machine Learning Framework for Everyone",
+      "stargazers_count": 185000,
+      "language": "Python",
+      "topics": ["AI/ML", "数据科学"],
+      "updated_at": "2024-01-30T08:00:00Z"
+    },
+    {
+      "name": "pytorch",
+      "html_url": "https://github.com/pytorch/pytorch",
+      "description": "Tensors and Dynamic neural networks with strong GPU acceleration",
+      "stargazers_count": 75000,
+      "language": "Python",
+      "topics": ["AI/ML", "数据科学"],
+      "updated_at": "2024-01-29T15:30:00Z"
+    },
+    {
+      "name": "react",
+      "html_url": "https://github.com/facebook/react",
+      "description": "A JavaScript library for building user interfaces with components",
+      "stargazers_count": 210000,
+      "language": "JavaScript",
+      "topics": ["React 生态", "Web 框架"],
+      "updated_at": "2024-01-28T12:00:00Z"
+    },
+    {
+      "name": "vue",
+      "html_url": "https://github.com/vuejs/vue",
+      "description": "The Progressive JavaScript Framework",
+      "stargazers_count": 207000,
+      "language": "JavaScript",
+      "topics": ["Vue 生态", "Web 框架"],
+      "updated_at": "2024-01-27T10:15:00Z"
+    },
+    {
+      "name": "kubernetes",
+      "html_url": "https://github.com/kubernetes/kubernetes",
+      "description": "Production-Grade Container Orchestration",
+      "stargazers_count": 108000,
+      "language": "Go",
+      "topics": ["DevOps", "容器化"],
+      "updated_at": "2024-01-26T09:45:00Z"
+    }
+  ]
+}

@@ -458,8 +458,8 @@ class GitHubRepoOrganizer:
 
 
 def main():
-    # 配置
-    USERNAME = input("请输入你的 GitHub 用户名: ").strip()
+    # 配置 - 支持环境变量和交互式输入
+    USERNAME = os.getenv('GITHUB_USERNAME') or input("请输入你的 GitHub 用户名: ").strip()
     TOKEN = os.getenv('GITHUB_TOKEN') or input("请输入 GitHub Token (可选，直接回车跳过): ").strip() or None
     
     if not USERNAME:
@@ -476,9 +476,15 @@ def main():
     
     # 生成报告
     organizer.generate_summary()
-    organizer.save_markdown()
-    organizer.save_json()
-    organizer.save_csv()
+    
+    # 确保输出目录存在
+    output_dir = Path('assets/data')
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 保存文件到 assets/data 目录
+    organizer.save_markdown('GitHub_Repos.md')
+    organizer.save_json(str(output_dir / 'github_repos.json'))
+    organizer.save_csv('github_repos.csv')
     
     print("✅ 所有文件已生成完毕!")
 

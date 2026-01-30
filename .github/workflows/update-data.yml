@@ -1,0 +1,79 @@
+name: 更新 GitHub 数据
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # 每周一 UTC 时间 00:00 运行
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 步骤 1: 检出代码
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # 步骤 2: 设置 Python 环境
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      # 步骤 3: 安装依赖
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      # 步骤 4: 运行 Stars 数据抓取脚本
+      - name: 抓取 GitHub Stars 数据
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python organize_github_stars.py
+      
+      # 步骤 5: 运行 Repositories 数据抓取脚本
+      - name: 抓取 GitHub Repositories 数据
+        env:
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python organize_github_repos.py
+      
+      # 步骤 6: 配置 Git 用户信息
+      - name: 配置 Git 用户信息
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      # 步骤 7: 检查是否有更改
+      - name: 检查是否有更改
+        id: verify-changed-files
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      
+      # 步骤 8: 提交更新到仓库
+      - name: 提交更新
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git add -A
+          git commit -m "chore: 自动更新 GitHub 数据 $(date +'%Y-%m-%d %H:%M:%S')"
+      
+      # 步骤 9: 推送到主分支
+      - name: 推送到主分支
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git push origin main

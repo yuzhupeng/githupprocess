@@ -1,0 +1,85 @@
+{
+  "username": "yuzhupeng",
+  "generated_at": "2024-01-30T10:00:00",
+  "total": 4,
+  "average_stars": 125,
+  "average_forks": 45,
+  "by_language": {
+    "Python": {
+      "count": 2,
+      "percentage": 50
+    },
+    "JavaScript": {
+      "count": 1,
+      "percentage": 25
+    },
+    "Go": {
+      "count": 1,
+      "percentage": 25
+    }
+  },
+  "by_topic": {
+    "学习资源": {
+      "count": 2,
+      "percentage": 50
+    },
+    "Web 框架": {
+      "count": 1,
+      "percentage": 25
+    },
+    "DevOps": {
+      "count": 1,
+      "percentage": 25
+    }
+  },
+  "all_projects": [
+    {
+      "name": "awesome-python",
+      "html_url": "https://github.com/yuzhupeng/awesome-python",
+      "description": "A curated list of awesome Python frameworks, libraries and software",
+      "stargazers_count": 450,
+      "forks_count": 120,
+      "language": "Python",
+      "topics": ["学习资源", "Python"],
+      "updated_at": "2024-01-30T08:00:00Z",
+      "fork": false,
+      "private": false
+    },
+    {
+      "name": "github-organizer",
+      "html_url": "https://github.com/yuzhupeng/github-organizer",
+      "description": "A tool to organize and analyze your GitHub stars and repositories",
+      "stargazers_count": 280,
+      "forks_count": 65,
+      "language": "Python",
+      "topics": ["学习资源", "命令行工具"],
+      "updated_at": "2024-01-29T15:30:00Z",
+      "fork": false,
+      "private": false
+    },
+    {
+      "name": "web-starter",
+      "html_url": "https://github.com/yuzhupeng/web-starter",
+      "description": "A modern web development starter template with React and TypeScript",
+      "stargazers_count": 125,
+      "forks_count": 32,
+      "language": "JavaScript",
+      "topics": ["Web 框架", "React 生态"],
+      "updated_at": "2024-01-28T12:00:00Z",
+      "fork": false,
+      "private": false
+    },
+    {
+      "name": "devops-toolkit",
+      "html_url": "https://github.com/yuzhupeng/devops-toolkit",
+      "description": "A collection of DevOps tools and scripts for Docker and Kubernetes",
+      "stargazers_count": 95,
+      "forks_count": 28,
+      "language": "Go",
+      "topics": ["DevOps", "容器化"],
+      "updated_at": "2024-01-27T10:15:00Z",
+      "fork": false,
+      "private": false
+    }
+  ]
+}
