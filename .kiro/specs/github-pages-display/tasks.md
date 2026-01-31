@@ -215,19 +215,19 @@
     - 测试主流浏览器（Chrome、Firefox、Safari、Edge）
     - 修复兼容性问题
 
-- [ ] 13. 文档和部署
-  - [ ] 13.1 编写 README 文档
+- [x] 13. 文档和部署
+  - [x] 13.1 编写 README 文档
     - 项目说明
     - 功能介绍
     - 使用说明
     - 部署说明
   
-  - [ ] 13.2 配置 GitHub Pages
+  - [x] 13.2 配置 GitHub Pages
     - 启用 GitHub Pages
     - 配置源分支为 main
     - 配置部署目录为 /
   
-  - [ ] 13.3 验证部署
+  - [x] 13.3 验证部署
     - 访问 GitHub Pages 链接
     - 验证页面正常显示
     - 验证数据正确加载
